@@ -25,93 +25,135 @@ h1,h2,h3{line-height:1.05;margin:0;font-family:"Arial Black",system-ui,sans-seri
 .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
 #progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;z-index:60}
 
+/* ---- Split-text headline reveals ---- */
+.split .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
+.split .w i{display:inline-block;font-style:normal;transform:translateY(115%) rotate(5deg);opacity:0;transition:transform .85s cubic-bezier(.19,1,.22,1),opacity .6s ease;transition-delay:calc(var(--wi)*70ms);will-change:transform,opacity}
+.split.on .w i{transform:none;opacity:1}
+.split em .w i{font-style:normal}
+h1.split .w i,h2.split .w i{transform-origin:left bottom}
+
 /* ---- Film intro ---- */
-#intro{position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;cursor:pointer;transition:opacity .8s ease,visibility .8s}
-#intro.gone{opacity:0;visibility:hidden;pointer-events:none}
-#intro .bar{position:absolute;left:0;right:0;height:12vh;background:#000;z-index:2;transition:transform 1s ease .2s}
-#intro .bar.top{top:0}
-#intro .bar.bottom{bottom:0}
-#intro.gone .bar.top{transform:translateY(-100%)}
-#intro.gone .bar.bottom{transform:translateY(100%)}
-#intro .intro-kicker{color:var(--accent);font-weight:900;letter-spacing:.35em;text-transform:uppercase;font-size:12px;animation:introFade 1s ease .2s both}
-#intro h1{font-size:clamp(48px,12vw,110px);margin:14px 0 8px;animation:introFade 1s ease .5s both}
-#intro h1 span{color:var(--accent)}
-#intro .intro-sub{color:var(--muted);letter-spacing:.25em;text-transform:uppercase;font-size:clamp(12px,2.4vw,16px);font-weight:700;animation:introFade 1s ease .8s both}
-#intro .intro-skip{margin-top:34px;color:var(--faint);font-size:13px;letter-spacing:.12em;text-transform:uppercase;animation:introFade 1s ease 1.1s both}
+#intro{position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;cursor:pointer;overflow:hidden}
+#intro .bar{position:absolute;left:0;right:0;height:14vh;background:#000;z-index:3;transition:transform 1.1s cubic-bezier(.76,0,.24,1) .15s}
+#intro .bar.top{top:0;border-bottom:1px solid rgba(245,158,11,.35)}
+#intro .bar.bottom{bottom:0;border-top:1px solid rgba(245,158,11,.35)}
+#intro.done .bar.top{transform:translateY(-101%)}
+#intro.done .bar.bottom{transform:translateY(101%)}
+#intro .intro-frame{position:relative;z-index:2;transition:opacity .6s ease,transform .9s cubic-bezier(.76,0,.24,1)}
+#intro.done .intro-frame{opacity:0;transform:scale(1.12);filter:blur(6px)}
+#intro.gone{visibility:hidden;pointer-events:none}
+#intro .intro-kicker{color:var(--accent);font-weight:900;letter-spacing:.4em;text-transform:uppercase;font-size:12px;animation:introFade 1s ease .15s both}
+#introName{font-size:clamp(52px,13vw,120px);margin:16px 0 10px;line-height:1}
+#introName span{display:inline-block;opacity:0;transform:translateY(60px) rotate(6deg);animation:introLetter .8s cubic-bezier(.19,1,.22,1) forwards;animation-delay:calc(.3s + var(--i)*70ms)}
+#introName span.accent{color:var(--accent)}
+@keyframes introLetter{to{opacity:1;transform:none}}
+#intro .intro-sub{color:var(--muted);letter-spacing:.28em;text-transform:uppercase;font-size:clamp(12px,2.4vw,16px);font-weight:700;animation:introFade 1s ease 1s both}
+#intro .intro-count{margin-top:26px;font-family:"Arial Black",sans-serif;font-size:15px;color:var(--faint);letter-spacing:.2em;animation:introFade 1s ease 1.15s both}
+#intro .intro-count em{font-style:normal;color:var(--accent)}
+#intro .intro-skip{margin-top:12px;color:var(--faint);font-size:12px;letter-spacing:.14em;text-transform:uppercase;animation:introFade 1s ease 1.3s both}
+#intro .intro-skip b{color:var(--muted)}
+#intro .intro-grain{position:absolute;inset:-50%;z-index:1;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");animation:grain 0.9s steps(4) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-2%)}100%{transform:translate(0,0)}}
 @keyframes introFade{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 
-/* ---- Dust particles canvas ---- */
-#dust{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.7}
+/* ---- WebGL dust layer ---- */
+#webgl{position:fixed;inset:0;z-index:1;pointer-events:none}
+#webgl canvas{display:block}
 main,header,footer{position:relative;z-index:2}
 
 /* Nav */
-header{position:sticky;top:0;z-index:50;background:rgba(20,18,16,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header{position:sticky;top:0;z-index:50;background:rgba(20,18,16,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);transition:background .4s ease,box-shadow .4s ease}
+header.scrolled{background:rgba(14,12,11,.96);box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 20px;max-width:1180px;margin:0 auto}
 .logo{font-family:"Arial Black",sans-serif;font-size:22px;letter-spacing:-.02em;text-decoration:none}
 .logo span{color:var(--accent)}
 .logo small{display:block;font-family:system-ui;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .navlinks{display:none;gap:22px}
-.navlinks a{text-decoration:none;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.navlinks a{text-decoration:none;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);position:relative;padding:4px 0}
+.navlinks a::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--accent);transform:scaleX(0);transform-origin:right;transition:transform .35s cubic-bezier(.19,1,.22,1)}
 .navlinks a:hover{color:#fff}
-.callbtn{background:var(--accent);color:#111;text-decoration:none;font-weight:900;padding:12px 18px;border-radius:999px;white-space:nowrap}
+.navlinks a:hover::after{transform:scaleX(1);transform-origin:left}
+.callbtn{background:var(--accent);color:#111;text-decoration:none;font-weight:900;padding:12px 18px;border-radius:999px;white-space:nowrap;transition:transform .25s ease,box-shadow .25s ease}
+.callbtn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(245,158,11,.35)}
 @media(min-width:860px){.navlinks{display:flex}}
 
 /* Hero slideshow + scroll camera */
-.hero{position:relative;min-height:92svh;display:flex;align-items:flex-end;overflow:hidden;background:#000}
-.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease}
+.hero{position:relative;min-height:96svh;display:flex;align-items:flex-end;overflow:hidden;background:#000}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease}
 .slide.active{opacity:1}
-.slide img{width:100%;height:100%;object-fit:cover;animation:kenburns 7s ease forwards;will-change:transform}
-@keyframes kenburns{from{transform:scale(1.02)}to{transform:scale(1.13)}}
-.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.15) 35%,rgba(20,18,16,.94) 92%)}
+.slide img{width:100%;height:100%;object-fit:cover;will-change:transform}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.12) 35%,rgba(20,18,16,.94) 92%);pointer-events:none}
+.giant-word{position:absolute;left:0;right:0;bottom:6%;z-index:1;font-family:"Arial Black",sans-serif;font-size:clamp(90px,22vw,260px);line-height:.85;text-transform:uppercase;white-space:nowrap;color:transparent;-webkit-text-stroke:2px rgba(245,158,11,.28);opacity:.55;pointer-events:none;will-change:transform;user-select:none}
 .hero-inner{position:relative;z-index:2;padding:110px 0 42px;width:100%;will-change:transform,opacity}
 @media(max-width:859px){.hero-inner{padding-bottom:96px}}
-.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.25);padding:8px 14px;border-radius:999px;font-weight:800;font-size:14px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.25);padding:8px 14px;border-radius:999px;font-weight:800;font-size:14px;opacity:0;transform:translateY(14px);transition:opacity .7s ease .1s,transform .7s ease .1s}
+.hero.play .badge{opacity:1;transform:none}
 .hero h1{font-size:clamp(42px,9vw,92px);margin:18px 0 14px;max-width:900px}
 .hero h1 em{font-style:normal;color:var(--accent)}
-.hero p.lead{font-size:clamp(17px,2.4vw,22px);color:#e8e6e1;max-width:640px;margin:0 0 24px}
+.hero p.lead{font-size:clamp(17px,2.4vw,22px);color:#e8e6e1;max-width:640px;margin:0 0 24px;opacity:0;transform:translateY(20px);transition:opacity .8s ease .55s,transform .8s cubic-bezier(.19,1,.22,1) .55s}
+.hero.play p.lead{opacity:1;transform:none}
 .cta-row{display:flex;flex-wrap:wrap;gap:12px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:900;padding:15px 24px;border-radius:999px;border:1px solid transparent;cursor:pointer}
+.hero .cta-row{opacity:0;transform:translateY(20px);transition:opacity .8s ease .75s,transform .8s cubic-bezier(.19,1,.22,1) .75s}
+.hero.play .cta-row{opacity:1;transform:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:900;padding:15px 24px;border-radius:999px;border:1px solid transparent;cursor:pointer;transition:transform .25s ease,box-shadow .25s ease,background .25s ease;will-change:transform}
 .btn-primary{background:var(--accent);color:#111}
+.btn-primary:hover{box-shadow:0 14px 30px rgba(245,158,11,.4)}
 .btn-ghost{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.35)}
-.dots{display:flex;gap:8px;margin-top:26px}
+.btn-ghost:hover{background:rgba(255,255,255,.18)}
+.dots{display:flex;gap:8px;margin-top:26px;opacity:0;transition:opacity .8s ease .95s}
+.hero.play .dots{opacity:1}
 .dots button{width:44px;height:44px;border-radius:50%;background:transparent;border:0;display:grid;place-items:center;cursor:pointer}
 .dots button::after{content:"";width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.4);transition:all .3s}
 .dots button.active::after{background:var(--accent);width:26px;border-radius:99px}
+.scroll-hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.75);font-size:11px;letter-spacing:.3em;text-transform:uppercase;font-weight:800;text-align:center;opacity:0;transition:opacity .8s ease 1.2s}
+.hero.play .scroll-hint{opacity:1}
+.scroll-hint i{display:block;width:1px;height:34px;background:linear-gradient(180deg,var(--accent),transparent);margin:8px auto 0;animation:hintDrop 1.8s ease-in-out infinite;transform-origin:top}
+@keyframes hintDrop{0%{transform:scaleY(0)}45%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
+@media(max-width:859px){.scroll-hint{display:none}}
 
 /* Stats */
-.stats{background:var(--accent);color:#111}
+.stats{background:var(--accent);color:#111;position:relative;overflow:hidden}
 .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0}
-.stat{padding:26px 18px;text-align:center;border-right:1px solid rgba(0,0,0,.18)}
+.stat{padding:26px 18px;text-align:center;border-right:1px solid rgba(0,0,0,.18);transition:transform .3s ease;will-change:transform}
 .stat:last-child{border-right:0}
 .stat b{font-size:clamp(30px,5vw,48px);display:block;line-height:1;font-family:"Arial Black",sans-serif}
 .stat span{font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:12px;opacity:.85}
 @media(min-width:760px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:759px){.stat:nth-child(2){border-right:0}}
 
-/* Crossing marquees */
-.marquee{overflow:hidden;border-block:1px solid var(--line);padding:14px 0;white-space:nowrap}
+/* Crossing marquees (JS-driven) */
+.marquee{overflow:hidden;border-block:1px solid var(--line);padding:14px 0;white-space:nowrap;position:relative}
 .marquee.m1{background:#0c0b0a}
 .marquee.m2{background:var(--accent);border-block-color:rgba(0,0,0,.2)}
-.marquee-track{display:inline-flex;gap:36px;animation:scroll 26s linear infinite;font-family:"Arial Black",sans-serif;text-transform:uppercase;font-size:18px;color:#d8d5cf}
-.marquee.m2 .marquee-track{color:#111;animation-direction:reverse;animation-duration:30s}
+.marquee-track{display:inline-flex;gap:36px;font-family:"Arial Black",sans-serif;text-transform:uppercase;font-size:18px;color:#d8d5cf;will-change:transform}
+.marquee.m2 .marquee-track{color:#111}
 .marquee-track span i{color:var(--accent);font-style:normal}
 .marquee.m2 .marquee-track span i{color:#fff}
-@keyframes scroll{to{transform:translateX(-50%)}}
 
 /* Sections */
-section{padding:72px 0}
+section{padding:72px 0;position:relative}
 .kicker{color:var(--accent);font-weight:900;letter-spacing:.16em;text-transform:uppercase;font-size:13px;margin-bottom:10px}
 h2{font-size:clamp(30px,5vw,52px);margin-bottom:14px}
 .sub{color:var(--muted);max-width:680px;font-size:17px}
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s cubic-bezier(.19,1,.22,1)}
 .reveal.in{opacity:1;transform:none}
-@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.slide img{animation:none}.marquee-track,.film-track{animation:none}#intro{display:none}}
+.reveal.d1{transition-delay:.12s}.reveal.d2{transition-delay:.24s}.reveal.d3{transition-delay:.36s}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  .split .w i{opacity:1;transform:none;transition:none}
+  .hero .badge,.hero p.lead,.hero .cta-row,.hero .dots,.scroll-hint{opacity:1;transform:none;transition:none}
+  #intro{display:none}
+  .slide img{animation:none}
+  .scroll-hint i{animation:none}
+  #intro .intro-grain{animation:none}
+}
 
 /* Sticky stacking service cards */
-.stack{margin-top:34px;display:grid;gap:20px}
-.stack-card{position:sticky;top:calc(76px + var(--i)*12px);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:grid;box-shadow:0 18px 40px rgba(0,0,0,.45);transform-style:preserve-3d;transition:transform .25s ease}
+.stack{margin-top:34px;display:grid;gap:20px;perspective:1200px}
+.stack-card{position:sticky;top:calc(76px + var(--i)*12px);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:grid;box-shadow:0 18px 40px rgba(0,0,0,.45);will-change:transform,filter}
 @media(min-width:760px){.stack-card{grid-template-columns:340px 1fr}}
-.stack-card img{height:220px;width:100%;object-fit:cover}
+.stack-card .imgwrap{overflow:hidden;position:relative}
+.stack-card img{height:220px;width:100%;object-fit:cover;will-change:transform}
 @media(min-width:760px){.stack-card img{height:100%;min-height:230px}}
 .stack-body{padding:24px 24px 26px;position:relative}
 .stack-num{position:absolute;top:18px;right:22px;font-family:"Arial Black",sans-serif;font-size:44px;color:rgba(245,158,11,.22);line-height:1}
@@ -119,15 +161,21 @@ h2{font-size:clamp(30px,5vw,52px);margin-bottom:14px}
 .stack-body p{color:var(--muted);margin:0;max-width:560px}
 .stack-tag{display:inline-block;margin-top:14px;background:rgba(245,158,11,.14);border:1px solid rgba(245,158,11,.45);color:var(--accent2);font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px}
 
-/* Filmstrip */
-.filmstrip{overflow:hidden;margin-top:8px}
-.film-track{display:flex;gap:14px;width:max-content;animation:scroll 38s linear infinite}
-.film-track img{width:300px;height:190px;object-fit:cover;border-radius:14px}
-@media(prefers-reduced-motion:reduce){.film-track{animation:none}}
+/* Filmstrip — endless reel (JS-driven) */
+.filmstrip{overflow:hidden;margin-top:8px;position:relative}
+.filmstrip::before,.filmstrip::after{content:"";position:absolute;top:0;bottom:0;width:60px;z-index:2;pointer-events:none}
+.filmstrip::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
+.filmstrip::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
+.film-viewport{overflow:hidden;padding:6px 0}
+.film-track{display:flex;gap:14px;width:max-content;will-change:transform}
+.film-track figure{margin:0;flex:0 0 auto;border-radius:14px;overflow:hidden;position:relative}
+.film-track img{width:300px;height:190px;object-fit:cover;transition:transform .5s cubic-bezier(.19,1,.22,1)}
+.film-track figure:hover img{transform:scale(1.07)}
 
 /* Pricing */
 .pricing{background:var(--bg2);border-block:1px solid var(--line)}
-.price-hero{background:var(--panel);border:2px solid var(--accent);border-radius:22px;padding:34px 28px;margin-top:30px;text-align:center;max-width:720px}
+.price-hero{background:var(--panel);border:2px solid var(--accent);border-radius:22px;padding:34px 28px;margin-top:30px;text-align:center;max-width:720px;will-change:transform;transition:box-shadow .3s ease}
+.price-hero:hover{box-shadow:0 24px 60px rgba(245,158,11,.16)}
 .price-hero .big{font-family:"Arial Black",sans-serif;font-size:clamp(40px,8vw,64px);line-height:1}
 .price-hero .big small{font-size:.45em;color:var(--muted);font-family:system-ui;font-weight:700}
 .price-hero .then{font-size:clamp(20px,3.4vw,26px);font-weight:900;margin-top:10px}
@@ -141,38 +189,44 @@ h2{font-size:clamp(30px,5vw,52px);margin-bottom:14px}
 /* Why / story */
 .split{display:grid;gap:28px;align-items:center}
 @media(min-width:900px){.split{grid-template-columns:1.05fr .95fr}}
-.split img.main{border-radius:20px;height:100%;min-height:320px;object-fit:cover;width:100%}
+.split .imgwrap{overflow:hidden;border-radius:20px}
+.split img.main{border-radius:20px;height:100%;min-height:320px;object-fit:cover;width:100%;will-change:transform}
 .checklist{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:12px}
-.checklist li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-weight:700}
+.checklist li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-weight:700;will-change:transform;transition:transform .3s ease,border-color .3s ease}
+.checklist li:hover{border-color:rgba(245,158,11,.5)}
 .checklist li span{color:var(--muted);font-weight:400;display:block;font-size:15px}
 
 /* Gallery */
 .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:30px}
 @media(min-width:800px){.gallery{grid-template-columns:repeat(4,1fr)}}
-.gallery button{padding:0;border:0;background:none;cursor:pointer;border-radius:14px;overflow:hidden;min-height:0}
-.gallery img{height:180px;width:100%;object-fit:cover;transition:transform .4s}
-.gallery button:hover img{transform:scale(1.06)}
+.gallery button{padding:0;border:0;background:none;cursor:pointer;border-radius:14px;overflow:hidden;min-height:0;will-change:transform;transition:transform .3s ease}
+.gallery img{height:180px;width:100%;object-fit:cover;transition:transform .5s cubic-bezier(.19,1,.22,1)}
+.gallery button:hover img{transform:scale(1.08)}
 #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:80;display:none;align-items:center;justify-content:center;padding:20px}
 #lightbox.open{display:flex}
-#lightbox img{max-height:84vh;border-radius:14px}
+#lightbox img{max-height:84vh;border-radius:14px;animation:lbIn .35s cubic-bezier(.19,1,.22,1)}
+@keyframes lbIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
 #lightbox button{position:absolute;top:16px;right:16px;width:48px;height:48px;border-radius:50%;border:0;background:#fff;font-size:22px;cursor:pointer}
 
 /* Areas */
 .areas{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
-.areas span{background:var(--panel2);border:1px solid var(--line);padding:10px 16px;border-radius:999px;font-weight:800}
+.areas span{background:var(--panel2);border:1px solid var(--line);padding:10px 16px;border-radius:999px;font-weight:800;transition:transform .3s ease,border-color .3s ease,background .3s ease}
+.areas span:hover{transform:translateY(-3px);border-color:rgba(245,158,11,.55);background:#2e2a25}
 
 /* Quote wizard */
 .quote{background:var(--bg2);border-block:1px solid var(--line)}
-.wizard{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:26px;margin-top:28px;max-width:760px}
+.wizard{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:26px;margin-top:28px;max-width:760px;will-change:transform}
 .progressbar{height:8px;background:#111;border-radius:99px;overflow:hidden;margin-bottom:22px}
 .progressbar i{display:block;height:100%;background:var(--accent);width:33%;transition:width .4s}
-.step{display:none}.step.active{display:block}
+.step{display:none}.step.active{display:block;animation:stepIn .45s cubic-bezier(.19,1,.22,1)}
+@keyframes stepIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
 .step h3{font-size:22px;margin-bottom:16px;text-transform:none;font-family:system-ui;letter-spacing:0}
 .options{display:grid;gap:10px}
 @media(min-width:600px){.options{grid-template-columns:1fr 1fr}}
 .options label,.field label{display:block}
 .options input{position:absolute;opacity:0}
-.options .opt{display:block;background:var(--bg2);border:2px solid var(--line);border-radius:12px;padding:16px;font-weight:800;cursor:pointer;min-height:52px}
+.options .opt{display:block;background:var(--bg2);border:2px solid var(--line);border-radius:12px;padding:16px;font-weight:800;cursor:pointer;min-height:52px;transition:transform .25s ease,border-color .25s ease,background .25s ease}
+.options .opt:hover{transform:translateY(-2px);border-color:rgba(245,158,11,.5)}
 .options input:checked+.opt{border-color:var(--accent);background:rgba(245,158,11,.14)}
 .options input:focus-visible+.opt{outline:3px solid var(--accent2)}
 .field{margin-bottom:14px}
@@ -183,13 +237,14 @@ h2{font-size:clamp(30px,5vw,52px);margin-bottom:14px}
 
 /* Call band */
 .callband{background:var(--accent);text-align:center;padding:64px 20px;position:relative;overflow:hidden}
-.callband h2{color:#111}
-.callband p{color:rgba(0,0,0,.8);font-size:18px}
-.callband .btn{background:#111;color:#fff;margin-top:10px}
+.callband::before{content:"FIX IT";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:"Arial Black",sans-serif;font-size:clamp(90px,20vw,220px);color:rgba(0,0,0,.07);white-space:nowrap;pointer-events:none}
+.callband h2{color:#111;position:relative}
+.callband p{color:rgba(0,0,0,.8);font-size:18px;position:relative}
+.callband .btn{background:#111;color:#fff;margin-top:10px;position:relative}
 
 footer{padding:34px 0;color:var(--faint);font-size:14px;border-top:1px solid var(--line)}
 footer a{color:var(--muted)}
-.sticky-call{position:fixed;left:12px;right:12px;bottom:12px;z-index:55;display:flex;gap:10px;transform:translateY(130%);transition:transform .35s ease}
+.sticky-call{position:fixed;left:12px;right:12px;bottom:12px;z-index:55;display:flex;gap:10px;transform:translateY(130%);transition:transform .35s cubic-bezier(.19,1,.22,1)}
 .sticky-call.show{transform:none}
 .sticky-call a{flex:1;text-align:center}
 @media(min-width:860px){.sticky-call{display:none}}
@@ -201,25 +256,29 @@ body{padding-bottom:70px}
 
 <!-- FILM INTRO -->
 <div id="intro" role="button" aria-label="Skip intro" tabindex="0">
+  <div class="intro-grain"></div>
   <div class="bar top"></div><div class="bar bottom"></div>
-  <p class="intro-kicker">Mechanicsburg &middot; Pennsylvania</p>
-  <h1>3RON&rsquo;S</h1>
-  <p class="intro-sub">Maintenance LLC &mdash; Handyman</p>
-  <p class="intro-skip">Tap anywhere to skip</p>
+  <div class="intro-frame">
+    <p class="intro-kicker">Mechanicsburg &middot; Pennsylvania</p>
+    <h1 id="introName" aria-label="3RON'S"></h1>
+    <p class="intro-sub">Maintenance LLC &mdash; Handyman</p>
+    <p class="intro-count" id="introCount">0<em>%</em></p>
+    <p class="intro-skip"><b>Scroll</b> or tap to skip</p>
+  </div>
 </div>
 
-<!-- DUST PARTICLES -->
-<canvas id="dust" aria-hidden="true"></canvas>
+<!-- WEBGL DUST FIELD -->
+<div id="webgl" aria-hidden="true"></div>
 
 <div id="progress"></div>
 
-<header>
+<header id="topnav">
   <div class="nav">
     <a class="logo" href="#top">3RON&rsquo;S <span>MAINTENANCE</span><small>Mechanicsburg &bull; Pennsylvania</small></a>
     <nav class="navlinks">
       <a href="#services">Services</a><a href="#pricing">Pricing</a><a href="#work">Our Work</a><a href="#quote">Free Quote</a>
     </nav>
-    <a class="callbtn" href="tel:+17174695242">&#9742; (717) 469-5242</a>
+    <a class="callbtn magnetic" href="tel:+17174695242">&#9742; (717) 469-5242</a>
   </div>
 </header>
 
@@ -230,24 +289,26 @@ body{padding-bottom:70px}
   <div class="slide"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1600&amp;q=80" alt="A well-kept family home in the suburbs"/></div>
   <div class="slide"><img src="https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&amp;fit=crop&amp;w=1600&amp;q=80" alt="Fresh paint going on an interior wall"/></div>
   <div class="slide"><img src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&amp;fit=crop&amp;w=1600&amp;q=80" alt="Handyman tools laid out on a workbench"/></div>
+  <div class="giant-word" id="giantWord" aria-hidden="true">FIXED &middot; FIXED &middot; FIXED</div>
   <div class="hero-inner wrap" id="heroInner">
     <span class="badge">Handyman &middot; Mechanicsburg, PA</span>
-    <h1>Small fixes. Big relief. <em>One call.</em></h1>
+    <h1 data-split>Small fixes. Big relief. <em>One call.</em></h1>
     <p class="lead">3RON&rsquo;S Maintenance fixes what&rsquo;s broken, finishes what&rsquo;s half-done, and gets your place ready &mdash; for homeowners and landlords across Mechanicsburg and the Harrisburg area.</p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="tel:+17174695242">Call (717) 469-5242</a>
-      <a class="btn btn-ghost" href="#quote">Get a Free Quote</a>
+      <a class="btn btn-primary magnetic" href="tel:+17174695242">Call (717) 469-5242</a>
+      <a class="btn btn-ghost magnetic" href="#quote">Get a Free Quote</a>
     </div>
     <div class="dots" id="dots" aria-label="Hero photos"></div>
   </div>
+  <div class="scroll-hint" aria-hidden="true">Scroll<i></i></div>
 </div>
 
 <!-- STATS (real facts only) -->
 <div class="stats"><div class="wrap stats-grid">
-  <div class="stat"><b>$225</b><span>First 2 hours</span></div>
-  <div class="stat"><b>$55/hr</b><span>After that</span></div>
-  <div class="stat"><b><span class="count" data-target="6">6</span></b><span>Towns served</span></div>
-  <div class="stat"><b><span class="count" data-target="8">8</span></b><span>Services offered</span></div>
+  <div class="stat tilt"><b>$225</b><span>First 2 hours</span></div>
+  <div class="stat tilt"><b>$55/hr</b><span>After that</span></div>
+  <div class="stat tilt"><b><span class="count" data-target="6">6</span></b><span>Towns served</span></div>
+  <div class="stat tilt"><b><span class="count" data-target="8">8</span></b><span>Services offered</span></div>
 </div></div>
 
 <!-- CROSSING MARQUEES -->
@@ -256,29 +317,29 @@ body{padding-bottom:70px}
 
 <!-- SERVICES — STICKY STACKING CARDS -->
 <section id="services"><div class="wrap">
-  <p class="kicker">What we fix</p>
-  <h2>Handyman services</h2>
-  <p class="sub">One list, one visit, one fair price. Scroll through what Ron can take care of at your home or rental.</p>
-  <div class="stack">
-    <article class="stack-card tilt" style="--i:0"><img src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Tools ready for general home repairs"/><div class="stack-body"><span class="stack-num">01</span><h3>General Handyman Repairs</h3><p>Doors that stick, loose handles, squeaky hinges, small holes, worn-out hardware &mdash; the everyday stuff that needs a steady hand and the right tools.</p><span class="stack-tag">Most jobs done in one visit</span></div></article>
-    <article class="stack-card tilt" style="--i:1"><img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A plan and checklist for home repairs"/><div class="stack-body"><span class="stack-num">02</span><h3>Punch Lists</h3><p>Got a long list of little jobs? Hand it over. Ron works through the whole list in one go, so you stop living with half-finished fixes.</p><span class="stack-tag">One list, one visit</span></div></article>
-    <article class="stack-card tilt" style="--i:2"><img src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Fresh paint over a repaired wall"/><div class="stack-body"><span class="stack-num">03</span><h3>Drywall</h3><p>Holes, cracks, dents and water damage &mdash; patched, smoothed and finished so the wall looks like new again.</p><span class="stack-tag">Patched &amp; finished smooth</span></div></article>
-    <article class="stack-card tilt" style="--i:3"><img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A clean new bathroom faucet fixture"/><div class="stack-body"><span class="stack-num">04</span><h3>Fixtures</h3><p>Lights, faucets, fans, towel bars, curtain rods &mdash; new fixtures put up right, old ones swapped out clean.</p><span class="stack-tag">Installed the right way</span></div></article>
-    <article class="stack-card tilt" style="--i:4"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A bright, freshly finished room ready for new tenants"/><div class="stack-body"><span class="stack-num">05</span><h3>Property Turnovers for Landlords</h3><p>One tenant out, the next one coming. Ron gets the place fixed, patched and ready to rent again &mdash; fast, so you don&rsquo;t lose rent days.</p><span class="stack-tag">For landlords &amp; rentals</span></div></article>
-    <article class="stack-card tilt" style="--i:5"><img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A fresh, updated living room"/><div class="stack-body"><span class="stack-num">06</span><h3>Interior Updates</h3><p>Small changes that make a room feel new &mdash; trim, paint touch-ups, new hardware, simple upgrades without a big remodel bill.</p><span class="stack-tag">Fresh look, small budget</span></div></article>
-    <article class="stack-card tilt" style="--i:6"><img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Outdoor construction work in progress"/><div class="stack-body"><span class="stack-num">07</span><h3>Fencing</h3><p>Fence repairs and new fencing to keep your yard private, your pets in, and your property looking sharp.</p><span class="stack-tag">Repairs &amp; new fences</span></div></article>
-    <article class="stack-card tilt" style="--i:7"><img src="https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A plumber repairing pipes under a sink"/><div class="stack-body"><span class="stack-num">08</span><h3>Plumbing &amp; Electrical Repairs</h3><p>Leaky taps, running toilets, dead outlets, flickering lights &mdash; the repairs that keep your home safe and working.</p><span class="stack-tag">Leaks, outlets &amp; more</span></div></article>
+  <p class="kicker reveal">What we fix</p>
+  <h2 data-split>Handyman services</h2>
+  <p class="sub reveal d1">One list, one visit, one fair price. Scroll through what Ron can take care of at your home or rental.</p>
+  <div class="stack" id="stack">
+    <article class="stack-card" style="--i:0"><div class="imgwrap"><img class="plx-in" src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Tools ready for general home repairs"/></div><div class="stack-body"><span class="stack-num">01</span><h3>General Handyman Repairs</h3><p>Doors that stick, loose handles, squeaky hinges, small holes, worn-out hardware &mdash; the everyday stuff that needs a steady hand and the right tools.</p><span class="stack-tag">Most jobs done in one visit</span></div></article>
+    <article class="stack-card" style="--i:1"><div class="imgwrap"><img class="plx-in" src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A plan and checklist for home repairs"/></div><div class="stack-body"><span class="stack-num">02</span><h3>Punch Lists</h3><p>Got a long list of little jobs? Hand it over. Ron works through the whole list in one go, so you stop living with half-finished fixes.</p><span class="stack-tag">One list, one visit</span></div></article>
+    <article class="stack-card" style="--i:2"><div class="imgwrap"><img class="plx-in" src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Fresh paint over a repaired wall"/></div><div class="stack-body"><span class="stack-num">03</span><h3>Drywall</h3><p>Holes, cracks, dents and water damage &mdash; patched, smoothed and finished so the wall looks like new again.</p><span class="stack-tag">Patched &amp; finished smooth</span></div></article>
+    <article class="stack-card" style="--i:3"><div class="imgwrap"><img class="plx-in" src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A clean new bathroom faucet fixture"/></div><div class="stack-body"><span class="stack-num">04</span><h3>Fixtures</h3><p>Lights, faucets, fans, towel bars, curtain rods &mdash; new fixtures put up right, old ones swapped out clean.</p><span class="stack-tag">Installed the right way</span></div></article>
+    <article class="stack-card" style="--i:4"><div class="imgwrap"><img class="plx-in" src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A bright, freshly finished room ready for new tenants"/></div><div class="stack-body"><span class="stack-num">05</span><h3>Property Turnovers for Landlords</h3><p>One tenant out, the next one coming. Ron gets the place fixed, patched and ready to rent again &mdash; fast, so you don&rsquo;t lose rent days.</p><span class="stack-tag">For landlords &amp; rentals</span></div></article>
+    <article class="stack-card" style="--i:5"><div class="imgwrap"><img class="plx-in" src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A fresh, updated living room"/></div><div class="stack-body"><span class="stack-num">06</span><h3>Interior Updates</h3><p>Small changes that make a room feel new &mdash; trim, paint touch-ups, new hardware, simple upgrades without a big remodel bill.</p><span class="stack-tag">Fresh look, small budget</span></div></article>
+    <article class="stack-card" style="--i:6"><div class="imgwrap"><img class="plx-in" src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Outdoor construction work in progress"/></div><div class="stack-body"><span class="stack-num">07</span><h3>Fencing</h3><p>Fence repairs and new fencing to keep your yard private, your pets in, and your property looking sharp.</p><span class="stack-tag">Repairs &amp; new fences</span></div></article>
+    <article class="stack-card" style="--i:7"><div class="imgwrap"><img class="plx-in" src="https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A plumber repairing pipes under a sink"/></div><div class="stack-body"><span class="stack-num">08</span><h3>Plumbing &amp; Electrical Repairs</h3><p>Leaky taps, running toilets, dead outlets, flickering lights &mdash; the repairs that keep your home safe and working.</p><span class="stack-tag">Leaks, outlets &amp; more</span></div></article>
   </div>
 </div></section>
 
-<div class="filmstrip" aria-hidden="true"><div class="film-track" id="film"></div></div>
+<div class="filmstrip" aria-hidden="true"><div class="film-viewport" id="filmViewport"><div class="film-track" id="film"></div></div></div>
 
 <!-- PRICING — REAL PUBLISHED PRICING -->
-<section class="pricing" id="pricing"><div class="wrap reveal">
-  <p class="kicker">Simple, honest pricing</p>
-  <h2>You know the price before we start</h2>
-  <p class="sub">No guessing, no surprises. Here&rsquo;s exactly how it works.</p>
-  <div class="price-hero">
+<section class="pricing" id="pricing"><div class="wrap">
+  <p class="kicker reveal">Simple, honest pricing</p>
+  <h2 data-split>You know the price before we start</h2>
+  <p class="sub reveal d1">No guessing, no surprises. Here&rsquo;s exactly how it works.</p>
+  <div class="price-hero tilt reveal d2">
     <div class="big">$225 <small>first 2 hours</small></div>
     <div class="then">then <span>$55/hr</span> after that</div>
     <p>Most small jobs fit inside the first two hours. Bigger jobs just keep going at $55 an hour &mdash; and you&rsquo;ll always know where you stand.</p>
@@ -289,53 +350,53 @@ body{padding-bottom:70px}
       <div>No hidden fees <span>The price you&rsquo;re quoted is the price you pay.</span></div>
     </div>
     <div class="cta-row" style="justify-content:center;margin-top:26px">
-      <a class="btn btn-primary" href="tel:+17174695242">Call (717) 469-5242</a>
-      <a class="btn btn-ghost" style="color:#fff" href="#quote">Get a Free Quote</a>
+      <a class="btn btn-primary magnetic" href="tel:+17174695242">Call (717) 469-5242</a>
+      <a class="btn btn-ghost magnetic" style="color:#fff" href="#quote">Get a Free Quote</a>
     </div>
   </div>
 </div></section>
 
 <!-- STORY -->
-<section><div class="wrap split reveal">
+<section><div class="wrap split">
   <div>
-    <p class="kicker">Run by Ron</p>
-    <h2>Your neighbor with a toolbox.</h2>
-    <p class="sub">3RON&rsquo;S Maintenance LLC is based right here in Mechanicsburg. When you call, you talk to Ron &mdash; the person who shows up, does the work, and makes sure it&rsquo;s right before he leaves.</p>
+    <p class="kicker reveal">Run by Ron</p>
+    <h2 data-split>Your neighbor with a toolbox.</h2>
+    <p class="sub reveal d1">3RON&rsquo;S Maintenance LLC is based right here in Mechanicsburg. When you call, you talk to Ron &mdash; the person who shows up, does the work, and makes sure it&rsquo;s right before he leaves.</p>
     <ul class="checklist">
-      <li>Local &amp; close by <span>Based at 825 Hodgestown Rd, Mechanicsburg &mdash; quick to reach homes across the area.</span></li>
-      <li>Clear pricing <span>$225 for the first 2 hours, then $55/hr. No surprises.</span></li>
-      <li>Free quotes <span>Call, text or email and get a free quote before any work begins.</span></li>
-      <li>Homeowners &amp; landlords <span>From one leaky tap to a full rental turnover between tenants.</span></li>
+      <li class="reveal d1">Local &amp; close by <span>Based at 825 Hodgestown Rd, Mechanicsburg &mdash; quick to reach homes across the area.</span></li>
+      <li class="reveal d2">Clear pricing <span>$225 for the first 2 hours, then $55/hr. No surprises.</span></li>
+      <li class="reveal d3">Free quotes <span>Call, text or email and get a free quote before any work begins.</span></li>
+      <li class="reveal d3">Homeowners &amp; landlords <span>From one leaky tap to a full rental turnover between tenants.</span></li>
     </ul>
   </div>
-  <img class="main" src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&amp;fit=crop&amp;w=1000&amp;q=80" alt="Handyman tools and equipment ready for the next job"/>
+  <div class="imgwrap reveal d2"><img class="main plx-in" src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&amp;fit=crop&amp;w=1000&amp;q=80" alt="Handyman tools and equipment ready for the next job"/></div>
 </div></section>
 
 <!-- GALLERY -->
-<section id="work" style="padding-top:0"><div class="wrap reveal">
-  <p class="kicker">On the job</p>
-  <h2>The kind of work we do</h2>
-  <p class="sub">Tap any photo to see it full size.</p>
-  <div class="gallery" id="gallery">
-    <button data-full="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="A bright updated living room"/></button>
-    <button data-full="https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Electrical wiring work in progress"/></button>
-    <button data-full="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="A freshly finished interior space"/></button>
-    <button data-full="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="A clean modern living area"/></button>
-    <button data-full="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Interior painting work"/></button>
-    <button data-full="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="A worker checking plans on site"/></button>
-    <button data-full="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Hands-on repair work"/></button>
-    <button data-full="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Outdoor construction crew at work"/></button>
+<section id="work" style="padding-top:0"><div class="wrap">
+  <p class="kicker reveal">On the job</p>
+  <h2 data-split>The kind of work we do</h2>
+  <p class="sub reveal d1">Tap any photo to see it full size.</p>
+  <div class="gallery reveal d2" id="gallery">
+    <button class="tilt" data-full="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="A bright updated living room"/></button>
+    <button class="tilt" data-full="https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Electrical wiring work in progress"/></button>
+    <button class="tilt" data-full="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="A freshly finished interior space"/></button>
+    <button class="tilt" data-full="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="A clean modern living area"/></button>
+    <button class="tilt" data-full="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Interior painting work"/></button>
+    <button class="tilt" data-full="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="A worker checking plans on site"/></button>
+    <button class="tilt" data-full="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Hands-on repair work"/></button>
+    <button class="tilt" data-full="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Outdoor construction crew at work"/></button>
   </div>
-  <h3 style="margin-top:44px;font-size:22px">Areas we serve</h3>
-  <div class="areas"><span>Mechanicsburg</span><span>Harrisburg</span><span>Camp Hill</span><span>Carlisle</span><span>Enola</span><span>New Cumberland</span></div>
+  <h3 class="reveal" style="margin-top:44px;font-size:22px">Areas we serve</h3>
+  <div class="areas reveal d1"><span>Mechanicsburg</span><span>Harrisburg</span><span>Camp Hill</span><span>Carlisle</span><span>Enola</span><span>New Cumberland</span></div>
 </div></section>
 
 <!-- QUOTE WIZARD -->
-<section class="quote" id="quote"><div class="wrap reveal">
-  <p class="kicker">Free quote</p>
-  <h2>Get your free quote</h2>
-  <p class="sub">Three quick steps. Your answers open as a ready-to-send email to 3RON&rsquo;S Maintenance &mdash; or just call Ron directly at (717) 469-5242.</p>
-  <form class="wizard" id="wizard">
+<section class="quote" id="quote"><div class="wrap">
+  <p class="kicker reveal">Free quote</p>
+  <h2 data-split>Get your free quote</h2>
+  <p class="sub reveal d1">Three quick steps. Your answers open as a ready-to-send email to 3RON&rsquo;S Maintenance &mdash; or just call Ron directly at (717) 469-5242.</p>
+  <form class="wizard tilt reveal d2" id="wizard">
     <div class="progressbar"><i id="pbar"></i></div>
     <div class="step active" data-step="1">
       <h3>Step 1 — What needs fixing?</h3>
@@ -379,9 +440,9 @@ body{padding-bottom:70px}
 
 <!-- CALL BAND -->
 <div class="callband">
-  <h2>Stop living with the broken stuff.</h2>
-  <p>Call Ron today &mdash; $225 for the first 2 hours, then $55/hr. Free quote, no pressure.</p>
-  <a class="btn" href="tel:+17174695242">&#9742; Call (717) 469-5242</a>
+  <h2 data-split>Stop living with the broken stuff.</h2>
+  <p class="reveal d1">Call Ron today &mdash; $225 for the first 2 hours, then $55/hr. Free quote, no pressure.</p>
+  <a class="btn magnetic reveal d2" href="tel:+17174695242">&#9742; Call (717) 469-5242</a>
 </div>
 </main>
 
@@ -400,112 +461,350 @@ body{padding-bottom:70px}
 
 <div id="lightbox" role="dialog" aria-label="Photo viewer"><button id="lbClose" aria-label="Close">&times;</button><img id="lbImg" src="" alt="Work photo, enlarged"/></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
 <script>
-// Film intro — auto-dismiss, tap/click/Enter to skip
 (function(){
-  var intro=document.getElementById('intro'),done=false;
-  function close(){if(done)return;done=true;intro.classList.add('gone');}
-  intro.addEventListener('click',close);
-  intro.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();close();}});
-  setTimeout(close,2600);
-})();
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var finePointer = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
 
-// Dust particles — floating dust motes in the work light
-(function(){
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  var c=document.getElementById('dust'),ctx=c.getContext('2d'),W,H,parts=[];
-  function size(){W=c.width=innerWidth;H=c.height=innerHeight;}
-  size();addEventListener('resize',size);
-  for(var i=0;i<70;i++){parts.push({x:Math.random(),y:Math.random(),r:Math.random()*2.2+.6,s:Math.random()*.00022+.00006,o:Math.random()*.5+.15,ph:Math.random()*Math.PI*2});}
-  (function loop(t){
-    ctx.clearRect(0,0,W,H);
-    for(var i=0;i<parts.length;i++){var p=parts[i];
-      p.y-=p.s;if(p.y<-.02){p.y=1.02;p.x=Math.random();}
-      var tw=.6+.4*Math.sin(t/900+p.ph);
-      ctx.beginPath();ctx.arc(p.x*W,p.y*H,p.r,0,Math.PI*2);
-      ctx.fillStyle='rgba(251,191,36,'+(p.o*tw)+')';ctx.fill();}
-    requestAnimationFrame(loop);
-  })(0);
-})();
+  /* ============ WORD SPLITTING (staggered headline reveals) ============ */
+  document.querySelectorAll("[data-split]").forEach(function(h){
+    var nodes = Array.prototype.slice.call(h.childNodes), wi = 0, out = "";
+    function wrapWords(text){
+      return text.split(/(\s+)/).map(function(part){
+        if(!part) return "";
+        if(/^\s+$/.test(part)) return " ";
+        var d = wi++; return '<span class="w"><i style="--wi:'+d+'">'+part+'</i></span>';
+      }).join("");
+    }
+    nodes.forEach(function(n){
+      if(n.nodeType===3){ out += wrapWords(n.textContent); }
+      else if(n.nodeType===1){
+        var tag = n.tagName.toLowerCase(), inner = "";
+        n.childNodes.forEach(function(c){ if(c.nodeType===3) inner += wrapWords(c.textContent); });
+        out += "<"+tag+">"+inner+"</"+tag+">";
+      }
+    });
+    h.innerHTML = out; h.classList.add("split");
+  });
 
-// Progress bar + sticky call + scroll-driven camera
-var prog=document.getElementById('progress'),hero=document.getElementById('hero'),heroInner=document.getElementById('heroInner'),ticking=false;
-function onScroll(){
-  var h=document.documentElement,p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
-  prog.style.width=p+'%';
-  document.getElementById('stickyCall').classList.toggle('show',h.scrollTop>560);
-  var y=h.scrollTop,hh=hero.offsetHeight;
-  if(y<hh){
-    var k=Math.min(y/hh,1);
-    var img=hero.querySelector('.slide.active img');
-    if(img)img.style.transform='scale('+(1.02+k*.18)+') translateY('+(k*60)+'px)';
-    heroInner.style.transform='translateY('+(-k*90)+'px)';
-    heroInner.style.opacity=String(1-k*1.4);
+  /* ============ FILM INTRO — letterbox, letter reveal, % counter, dismiss on scroll ============ */
+  var intro = document.getElementById("intro"), hero = document.getElementById("hero");
+  var nameEl = document.getElementById("introName");
+  "3RON'S".split("").forEach(function(ch,i){
+    var s=document.createElement("span"); s.style.setProperty("--i",i); s.textContent=ch;
+    if(i===0) s.className="accent";
+    nameEl.appendChild(s);
+  });
+  function startHero(){
+    hero.classList.add("play");
+    hero.querySelectorAll(".split").forEach(function(el){ el.classList.add("on"); });
   }
-  ticking=false;
-}
-addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(onScroll);}},{passive:true});
+  var introDone=false;
+  function finishIntro(){
+    if(introDone) return; introDone=true;
+    intro.classList.add("done"); document.body.style.overflow="";
+    startHero();
+    setTimeout(function(){ intro.classList.add("gone"); },1200);
+  }
+  if(reduce){ finishIntro(); }
+  else{
+    document.body.style.overflow="hidden";
+    var cnt=document.getElementById("introCount"), t0=performance.now();
+    (function countTick(now){
+      if(introDone) return;
+      var p=Math.min(1,(now-t0)/1400), e=1-Math.pow(1-p,3);
+      cnt.innerHTML=Math.round(e*100)+"<em>%</em>";
+      if(p<1) requestAnimationFrame(countTick);
+      else setTimeout(finishIntro,200);
+    })(t0);
+    intro.addEventListener("click",finishIntro);
+    intro.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();finishIntro();}});
+    window.addEventListener("wheel",finishIntro,{passive:true,once:true});
+    window.addEventListener("touchmove",finishIntro,{passive:true,once:true});
+    setTimeout(finishIntro,4200);
+  }
 
-// Hero slideshow
-var slides=document.querySelectorAll('.slide'),dotsWrap=document.getElementById('dots'),cur=0,timer;
-slides.forEach(function(_,i){var b=document.createElement('button');b.setAttribute('aria-label','Show photo '+(i+1));if(i===0)b.className='active';b.addEventListener('click',function(){go(i);restart();});dotsWrap.appendChild(b);});
-function go(i){var oldImg=slides[cur].querySelector('img');if(oldImg)oldImg.style.transform='';slides[cur].classList.remove('active');dotsWrap.children[cur].classList.remove('active');cur=i;slides[cur].classList.add('active');dotsWrap.children[cur].classList.add('active');}
-function restart(){clearInterval(timer);timer=setInterval(function(){go((cur+1)%slides.length);},4500);}
-restart();
+  /* ============ MARQUEES + FILMSTRIP content ============ */
+  var items=["Handyman Repairs","Punch Lists","Drywall","Fixtures","Property Turnovers","Interior Updates","Fencing","Plumbing & Electrical","$225 First 2 Hours","$55/hr After","Free Quotes"];
+  var mh="";for(var r=0;r<2;r++){items.forEach(function(t){mh+="<span>"+t+" <i>\u25c6</i></span>";});}
+  document.getElementById("marquee1").innerHTML=mh;
+  document.getElementById("marquee2").innerHTML=mh;
+  var pics=[
+   "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80",
+   "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+   "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=600&q=80",
+   "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=600&q=80",
+   "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=600&q=80",
+   "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=600&q=80",
+   "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80",
+   "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80"
+  ];
+  var fh="";for(var r2=0;r2<2;r2++){pics.forEach(function(p){fh+='<figure><img src="'+p+'" alt="" loading="lazy"/></figure>';});}
+  document.getElementById("film").innerHTML=fh;
 
-// Crossing marquees + filmstrip content
-var items=['Handyman Repairs','Punch Lists','Drywall','Fixtures','Property Turnovers','Interior Updates','Fencing','Plumbing & Electrical','$225 First 2 Hours','$55/hr After','Free Quotes'];
-var mh='';for(var r=0;r<2;r++){items.forEach(function(t){mh+='<span>'+t+' <i>\u25c6</i></span>';});}
-document.getElementById('marquee1').innerHTML=mh;
-document.getElementById('marquee2').innerHTML=mh;
-var pics=[
- 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80',
- 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80',
- 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=600&q=80',
- 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=600&q=80',
- 'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=600&q=80',
- 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=600&q=80',
- 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80',
- 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80'
-];
-var fh='';for(var r2=0;r2<2;r2++){pics.forEach(function(p){fh+='<img src="'+p+'" alt=""/>';});}
-document.getElementById('film').innerHTML=fh;
+  /* ============ SCROLL STATE ============ */
+  var prog=document.getElementById("progress"), nav=document.getElementById("topnav"),
+      stickyCall=document.getElementById("stickyCall");
+  var targetY=window.scrollY||0, smoothY=targetY, vel=0, lastTarget=targetY;
+  function onScroll(){
+    var h=document.documentElement, max=h.scrollHeight-h.clientHeight;
+    targetY=h.scrollTop;
+    prog.style.width=(max>0?(h.scrollTop/max)*100:0)+"%";
+    nav.classList.toggle("scrolled", h.scrollTop>40);
+    stickyCall.classList.toggle("show", h.scrollTop>560);
+  }
+  window.addEventListener("scroll",onScroll,{passive:true}); onScroll();
 
-// Reveal + counters
-var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.05});
-document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
-setTimeout(function(){document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});},2500);
-var cio=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;cio.unobserve(e.target);var el=e.target,target=parseFloat(el.dataset.target),dec=parseInt(el.dataset.decimals||'0'),start=null;
-function tick(ts){if(!start)start=ts;var p=Math.min((ts-start)/600,1);el.textContent=(target*p).toFixed(dec);if(p<1)requestAnimationFrame(tick);else el.textContent=target.toFixed(dec);}requestAnimationFrame(tick);});},{threshold:.4});
-document.querySelectorAll('.count').forEach(function(el){cio.observe(el);});
+  /* ============ CINEMATIC rAF ENGINE — scroll-driven camera ============ */
+  var heroInner=document.getElementById("heroInner"), giantWord=document.getElementById("giantWord"),
+      mq1=document.getElementById("marquee1"), mq2=document.getElementById("marquee2"),
+      plxIns=document.querySelectorAll(".plx-in"),
+      svcCards=document.querySelectorAll(".stack-card"),
+      filmTrack=document.getElementById("film"), filmViewport=document.getElementById("filmViewport"),
+      filmFigs=filmTrack?filmTrack.querySelectorAll("figure"):[];
+  var mqX1=0, mqX2=0, mq2Init=false, lastNow=performance.now(),
+      filmIndex=0, filmPhase=0, filmTimer=0, filmHover=false, filmTouch=false;
+  if(filmViewport){
+    filmViewport.addEventListener("pointerenter",function(){ filmHover=true; });
+    filmViewport.addEventListener("pointerleave",function(){ filmHover=false; filmTouch=false; });
+    filmViewport.addEventListener("pointerdown",function(){ filmTouch=true; },{passive:true});
+    window.addEventListener("pointerup",function(){ filmTouch=false; },{passive:true});
+    window.addEventListener("pointercancel",function(){ filmTouch=false; },{passive:true});
+    filmViewport.addEventListener("focusin",function(){ filmHover=true; });
+    filmViewport.addEventListener("focusout",function(){ filmHover=false; });
+  }
+  function loop(now){
+    var dt=Math.min(50,now-lastNow); lastNow=now;
+    smoothY+=(targetY-smoothY)*0.09;
+    if(Math.abs(targetY-smoothY)<0.1) smoothY=targetY;
+    vel+=((targetY-lastTarget)-vel)*0.08; lastTarget=targetY;
+    var vh=window.innerHeight, speedBoost=Math.min(2.2,Math.abs(vel)*0.012);
 
-// 3D tilt on stacking cards
-if(matchMedia('(hover:hover)').matches){document.querySelectorAll('.tilt').forEach(function(card){
-card.addEventListener('mousemove',function(e){var r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.transform='perspective(900px) rotateY('+(x*4)+'deg) rotateX('+(-y*4)+'deg)';});
-card.addEventListener('mouseleave',function(){card.style.transform='';});});}
+    /* hero: camera push on photo + content drift + giant word */
+    var hr=hero.getBoundingClientRect();
+    if(hr.bottom>0){
+      var hp=Math.max(0,Math.min(1,-hr.top/Math.max(1,hr.height)));
+      var img=hero.querySelector(".slide.active img");
+      if(img) img.style.transform="scale("+(1.06+hp*0.22)+") translateY("+(hp*46)+"px)";
+      heroInner.style.transform="translate3d(0,"+(-hp*70)+"px,0)";
+      heroInner.style.opacity=String(1-hp*0.6);
+      giantWord.style.transform="translate3d("+(-hp*260)+"px,0,0)";
+    }
 
-// Gallery lightbox
-var lb=document.getElementById('lightbox'),lbImg=document.getElementById('lbImg');
-document.querySelectorAll('#gallery button').forEach(function(b){b.addEventListener('click',function(){lbImg.src=b.dataset.full;lb.classList.add('open');});});
-document.getElementById('lbClose').addEventListener('click',function(){lb.classList.remove('open');});
-lb.addEventListener('click',function(e){if(e.target===lb)lb.classList.remove('open');});
+    /* inner photos: slow push + parallax */
+    plxIns.forEach(function(im){
+      var r=im.getBoundingClientRect();
+      if(r.bottom>-120&&r.top<vh+120){
+        var p=Math.max(0,Math.min(1,(vh-r.top)/(vh+r.height)));
+        im.style.transform="scale("+(1.08+p*0.12)+") translateY("+((p-0.5)*-18)+"px)";
+      }
+    });
 
-// Quote wizard
-var step=1,steps=document.querySelectorAll('.step'),pbar=document.getElementById('pbar'),backBtn=document.getElementById('backBtn'),nextBtn=document.getElementById('nextBtn'),sendBtn=document.getElementById('sendBtn');
-function renderStep(){steps.forEach(function(s){s.classList.toggle('active',+s.dataset.step===step);});pbar.style.width=(step/3*100)+'%';backBtn.style.display=step>1?'':'none';nextBtn.style.display=step<3?'':'none';sendBtn.style.display=step===3?'':'none';}
-nextBtn.addEventListener('click',function(){if(step<3){step++;renderStep();}});
-backBtn.addEventListener('click',function(){if(step>1){step--;renderStep();}});
-renderStep();
-document.getElementById('wizard').addEventListener('submit',function(e){
- e.preventDefault();
- var svc=document.querySelector('input[name="service"]:checked').value;
- var area=document.querySelector('input[name="area"]:checked').value;
- var details=document.getElementById('qdetails').value.trim();
- var name=document.getElementById('qname').value.trim();
- var phone=document.getElementById('qphone').value.trim();
- var body='Hi Ron,\n\nI\'d like a free quote.\n\nJob: '+svc+'\nArea: '+area+(details?'\nDetails: '+details:'')+'\n\nName: '+(name||'—')+'\nPhone: '+(phone||'—');
- var a=document.createElement('a');a.href='mailto:3ronsmen@gmail.com?subject='+encodeURIComponent('Free quote request — '+svc+' in '+area)+'&body='+encodeURIComponent(body);document.body.appendChild(a);a.click();a.remove();
-});
+    /* marquees: constant drift + scroll velocity boost */
+    if(mq1&&mq2){
+      mqX1-=(0.55+speedBoost)*(dt/16.7); mqX2+=(0.4+speedBoost*0.8)*(dt/16.7);
+      var w1=mq1.scrollWidth/2, w2=mq2.scrollWidth/2;
+      if(w2>0&&mqX2===0&&!mq2Init){ mqX2=-w2; }
+      mq2Init=true;
+      if(w1>0&&-mqX1>=w1) mqX1+=w1;
+      if(w2>0&&mqX2>=0) mqX2-=w2;
+      mq1.style.transform="translate3d("+mqX1+"px,0,0)";
+      mq2.style.transform="translate3d("+mqX2+"px,0,0)";
+    }
+
+    /* sticky stack: cards beneath scale down + darken as the next one covers them */
+    svcCards.forEach(function(card,i){
+      if(i===svcCards.length-1){ card.style.filter=""; return; }
+      var nxt=svcCards[i+1].getBoundingClientRect(), cr=card.getBoundingClientRect();
+      var p=Math.max(0,Math.min(1,(vh-nxt.top)/Math.max(1,vh-cr.top)));
+      if(nxt.top<vh&&nxt.top>cr.top-40){
+        card.style.transform="scale("+(1-p*0.055)+")";
+        card.style.filter="brightness("+(1-p*0.3)+")";
+      } else if(nxt.top>=vh){ card.style.transform=""; card.style.filter=""; }
+    });
+
+    /* filmstrip: endless reel — cards rest fully in view, then the reel glides
+       one card forward. The track holds the set twice, so stepping past the last
+       card of the first set lands on its identical twin and the reel resets
+       with no visible jump. A finger or cursor on the reel slows it down. */
+    if(filmTrack&&filmFigs.length>6&&filmViewport){
+      var fr2=filmViewport.getBoundingClientRect();
+      if(fr2.bottom>0&&fr2.top<vh&&!reduce){
+        var step=filmFigs[0].offsetWidth+14;
+        if(step>14){
+          var slow=(filmHover||filmTouch)?0.15:1;
+          filmTimer+=dt*slow;
+          var dwell=3000, slide=800, off;
+          if(filmPhase===0){
+            if(filmTimer>=dwell){ filmPhase=1; filmTimer=0; }
+            off=filmIndex*step;
+          }else{
+            var pr=Math.min(1,filmTimer/slide),
+                ez=pr<.5?4*pr*pr*pr:1-Math.pow(-2*pr+2,3)/2;
+            off=(filmIndex+ez)*step;
+            if(pr>=1){ filmIndex++; filmPhase=0; filmTimer=0; if(filmIndex>=8) filmIndex=0; off=filmIndex*step; }
+          }
+          filmTrack.style.transform="translate3d("+(-off)+"px,0,0)";
+        }
+      }
+    }
+    if(!reduce) requestAnimationFrame(loop);
+  }
+  if(!reduce) requestAnimationFrame(loop);
+
+  /* ============ 3D TILT + MAGNETIC ============ */
+  if(finePointer&&!reduce){
+    [[".stat",6],[".gallery button",8],[".price-hero",5],[".wizard",2]].forEach(function(cfg){
+      document.querySelectorAll(cfg[0]).forEach(function(el){
+        el.addEventListener("pointermove",function(e){
+          var r=el.getBoundingClientRect(), px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+          el.style.transform="perspective(1100px) rotateX("+((0.5-py)*cfg[1])+"deg) rotateY("+((px-0.5)*cfg[1])+"deg) translateY(-3px)";
+        });
+        el.addEventListener("pointerleave",function(){ el.style.transform=""; });
+      });
+    });
+    document.querySelectorAll(".magnetic").forEach(function(btn){
+      btn.addEventListener("pointermove",function(e){
+        var r=btn.getBoundingClientRect(), px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+        btn.style.transform="translate("+((px-0.5)*11)+"px,"+((py-0.5)*8-1)+"px)";
+      });
+      btn.addEventListener("pointerleave",function(){ btn.style.transform=""; });
+    });
+    hero.addEventListener("pointermove",function(e){
+      var r=hero.getBoundingClientRect(), px=(e.clientX-r.left)/r.width-0.5;
+      giantWord.style.marginLeft=(-px*22)+"px";
+    });
+  }
+
+  /* ============ THREE.JS — GOLDEN SAWDUST FIELD + SCROLL CAMERA ============ */
+  function initWebGL(){
+    var mount=document.getElementById("webgl");
+    if(!mount||!window.THREE) return;
+    try{
+      var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:"high-performance"});
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
+      renderer.setSize(window.innerWidth,window.innerHeight,false);
+      mount.appendChild(renderer.domElement);
+
+      var scene=new THREE.Scene();
+      var camera=new THREE.PerspectiveCamera(58,window.innerWidth/Math.max(1,window.innerHeight),0.1,100);
+      camera.position.set(0,0,9);
+      var world=new THREE.Group(); scene.add(world);
+
+      /* soft round dust sprite */
+      var sc=document.createElement("canvas"); sc.width=sc.height=128;
+      var sg=sc.getContext("2d"), grad=sg.createRadialGradient(64,64,0,64,64,64);
+      grad.addColorStop(0,"rgba(255,238,210,1)"); grad.addColorStop(0.35,"rgba(255,205,150,.75)"); grad.addColorStop(1,"rgba(255,205,150,0)");
+      sg.fillStyle=grad; sg.fillRect(0,0,128,128);
+      var sprite=new THREE.CanvasTexture(sc);
+      function makePoints(count,size,opacity,spread){
+        var pos=new Float32Array(count*3);
+        for(var i=0;i<count;i++){ pos[i*3]=-10+Math.random()*20; pos[i*3+1]=-6+Math.random()*12; pos[i*3+2]=-2+Math.random()*spread; }
+        var g=new THREE.BufferGeometry(); g.setAttribute("position",new THREE.BufferAttribute(pos,3));
+        var p=new THREE.Points(g,new THREE.PointsMaterial({size:size,map:sprite,color:0xffd6a3,transparent:true,opacity:opacity,depthWrite:false,blending:THREE.AdditiveBlending}));
+        world.add(p); return p;
+      }
+      var dustNear=makePoints(140,0.32,0.85,5), dustFar=makePoints(220,0.13,0.5,4);
+      /* soft warm glows */
+      [[5.5,3.2,-1,2.6,0.3],[-6,-3.4,0,2.0,0.18],[0,4.6,-2,3.2,0.14]].forEach(function(cfg){
+        var sm=new THREE.SpriteMaterial({map:sprite,color:0xffbe78,transparent:true,opacity:cfg[4],depthWrite:false,blending:THREE.AdditiveBlending});
+        var sp=new THREE.Sprite(sm); sp.position.set(cfg[0],cfg[1],cfg[2]); sp.scale.set(cfg[3],cfg[3],1);
+        world.add(sp);
+      });
+      /* tumbling sawdust chips — small amber shards drifting in the light */
+      var chipGeo=new THREE.TetrahedronGeometry(0.09);
+      var chipMat=new THREE.MeshBasicMaterial({color:0xfbbf24,transparent:true,opacity:0.75});
+      var chips=[];
+      for(var ci=0;ci<26;ci++){
+        var chip=new THREE.Mesh(chipGeo,chipMat);
+        chip.position.set(-9+Math.random()*18,-5+Math.random()*10,-1+Math.random()*4);
+        chip.rotation.set(Math.random()*Math.PI,Math.random()*Math.PI,0);
+        chip.userData.rs={x:(Math.random()-0.5)*0.9,y:(Math.random()-0.5)*0.9};
+        chip.userData.vy=0.12+Math.random()*0.25;
+        chip.scale.setScalar(0.6+Math.random()*1.1);
+        world.add(chip); chips.push(chip);
+      }
+      var clock=new THREE.Clock();
+      function renderGL(){
+        var t=clock.getElapsedTime(), dt=Math.min(0.05,clock.getDelta()+0.016);
+        dustNear.rotation.y=t*0.012; dustFar.rotation.y=-t*0.008;
+        dustNear.position.y=Math.sin(t*0.18)*0.3; dustFar.position.y=Math.cos(t*0.14)*0.25;
+        chips.forEach(function(c){
+          c.rotation.x+=c.userData.rs.x*dt; c.rotation.y+=c.userData.rs.y*dt;
+          c.position.y+=c.userData.vy*dt;
+          if(c.position.y>6){ c.position.y=-6; c.position.x=-9+Math.random()*18; }
+        });
+        /* scroll camera: the whole dust field drifts and tilts as you scroll */
+        var docH=Math.max(1,document.documentElement.scrollHeight-window.innerHeight);
+        var sp=smoothY/docH;
+        camera.position.y=-sp*3.2;
+        camera.position.x=Math.sin(sp*Math.PI)*0.6;
+        world.rotation.z=sp*0.12;
+        camera.lookAt(0,camera.position.y,0);
+        renderer.render(scene,camera);
+        requestAnimationFrame(renderGL);
+      }
+      renderGL();
+      window.addEventListener("resize",function(){
+        camera.aspect=window.innerWidth/Math.max(1,window.innerHeight);
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth,window.innerHeight,false);
+      });
+    }catch(err){ /* WebGL unavailable — page works fine without it */ }
+  }
+  if(!reduce){
+    if(window.THREE){ initWebGL(); }
+    else{
+      var s=document.createElement("script");
+      s.src="https://unpkg.com/three@0.160.0/build/three.min.js";
+      s.onload=initWebGL; s.onerror=function(){};
+      document.head.appendChild(s);
+    }
+  }
+
+  /* ============ HERO SLIDESHOW ============ */
+  var slides=document.querySelectorAll(".slide"),dotsWrap=document.getElementById("dots"),cur=0,timer;
+  slides.forEach(function(_,i){var b=document.createElement("button");b.setAttribute("aria-label","Show photo "+(i+1));if(i===0)b.className="active";b.addEventListener("click",function(){go(i);restart();});dotsWrap.appendChild(b);});
+  function go(i){var oldImg=slides[cur].querySelector("img");if(oldImg)oldImg.style.transform="";slides[cur].classList.remove("active");dotsWrap.children[cur].classList.remove("active");cur=i;slides[cur].classList.add("active");dotsWrap.children[cur].classList.add("active");}
+  function restart(){clearInterval(timer);timer=setInterval(function(){go((cur+1)%slides.length);},4500);}
+  restart();
+
+  /* ============ REVEALS + SPLIT HEADLINES + COUNTERS ============ */
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.05});
+  document.querySelectorAll(".reveal").forEach(function(el){io.observe(el);});
+  var sio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("on");sio.unobserve(e.target);}});},{threshold:.25});
+  document.querySelectorAll("[data-split]").forEach(function(el){if(!hero.contains(el))sio.observe(el);});
+  setTimeout(function(){document.querySelectorAll(".reveal").forEach(function(el){el.classList.add("in");});document.querySelectorAll("[data-split]").forEach(function(el){el.classList.add("on");});},4000);
+  var cio=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;cio.unobserve(e.target);var el=e.target,target=parseFloat(el.dataset.target),dec=parseInt(el.dataset.decimals||"0"),start=null;
+  function tick(ts){if(!start)start=ts;var p=Math.min((ts-start)/600,1);el.textContent=(target*p).toFixed(dec);if(p<1)requestAnimationFrame(tick);else el.textContent=target.toFixed(dec);}requestAnimationFrame(tick);});},{threshold:.4});
+  document.querySelectorAll(".count").forEach(function(el){cio.observe(el);});
+
+  /* ============ GALLERY LIGHTBOX ============ */
+  var lb=document.getElementById("lightbox"),lbImg=document.getElementById("lbImg");
+  document.querySelectorAll("#gallery button").forEach(function(b){b.addEventListener("click",function(){lbImg.src=b.dataset.full;lb.classList.add("open");});});
+  document.getElementById("lbClose").addEventListener("click",function(){lb.classList.remove("open");});
+  lb.addEventListener("click",function(e){if(e.target===lb)lb.classList.remove("open");});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")lb.classList.remove("open");});
+
+  /* ============ QUOTE WIZARD ============ */
+  var step=1,steps=document.querySelectorAll(".step"),pbar=document.getElementById("pbar"),backBtn=document.getElementById("backBtn"),nextBtn=document.getElementById("nextBtn"),sendBtn=document.getElementById("sendBtn");
+  function renderStep(){steps.forEach(function(s){s.classList.toggle("active",+s.dataset.step===step);});pbar.style.width=(step/3*100)+"%";backBtn.style.display=step>1?"":"none";nextBtn.style.display=step<3?"":"none";sendBtn.style.display=step===3?"":"none";}
+  nextBtn.addEventListener("click",function(){if(step<3){step++;renderStep();}});
+  backBtn.addEventListener("click",function(){if(step>1){step--;renderStep();}});
+  renderStep();
+  document.getElementById("wizard").addEventListener("submit",function(e){
+   e.preventDefault();
+   var svc=document.querySelector('input[name="service"]:checked').value;
+   var area=document.querySelector('input[name="area"]:checked').value;
+   var details=document.getElementById("qdetails").value.trim();
+   var name=document.getElementById("qname").value.trim();
+   var phone=document.getElementById("qphone").value.trim();
+   var body="Hi Ron,\n\nI'd like a free quote.\n\nJob: "+svc+"\nArea: "+area+(details?"\nDetails: "+details:"")+"\n\nName: "+(name||"—")+"\nPhone: "+(phone||"—");
+   var a=document.createElement("a");a.href="mailto:3ronsmen@gmail.com?subject="+encodeURIComponent("Free quote request — "+svc+" in "+area)+"&body="+encodeURIComponent(body);document.body.appendChild(a);a.click();a.remove();
+  });
+})();
 </script>
 </body>
 </html>
